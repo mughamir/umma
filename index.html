@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Special for You ❤️</title>
+    <style>
+        /* --- Reset & Base Styles --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent; /* Hapus highlight biru di HP */
+        }
+
+        body {
+            font-family: 'Poppins', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Background gradasi romantis */
+            background: linear-gradient(135deg, #fecfef 0%, #ff9a9e 99%, #fecfef 100%);
+            padding: 20px;
+            overflow: hidden; /* Mencegah scroll bar muncul */
+        }
+
+        /* --- Main Player Card (Glassmorphism) --- */
+        .player-container {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 30px;
+            border-radius: 30px;
+            width: 100%;
+            max-width: 380px; /* Lebar maksimal di PC */
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        @media (max-width: 375px) {
+            .player-container {
+                padding: 20px; /* Padding lebih kecil untuk HP sangat kecil */
+            }
+        }
+
+        /* --- Foto Sampul Kustom --- */
+        .cover-wrapper {
+            width: 260px;
+            height: 260px;
+            margin: 0 auto 25px;
+            border-radius: 50%; /* Membuatnya bulat agar aesthetic */
+            overflow: hidden;
+            border: 6px solid white;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            position: relative;
+        }
+
+        @media (max-width: 480px) {
+            .cover-wrapper {
+                width: 200px; /* Ukuran foto lebih kecil di HP */
+                height: 200px;
+                margin-bottom: 20px;
+            }
+        }
+
+        #cover-art {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.4s ease; /* Transisi halus saat ganti foto */
+        }
+
+        /* --- Teks Info (Judul & Pesan) --- */
+        .song-details h2 {
+            color: #fff;
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis; /* Titik-titik jika judul kepanjangan */
+        }
+
+        .song-details p {
+            color: #fff0f3;
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        @media (max-width: 480px) {
+            .song-details h2 { font-size: 1.2rem; }
+            .song-details p { font-size: 0.8rem; margin-bottom: 15px;}
+        }
+
+        /* --- Progress Bar --- */
+        .progress-area {
+            height: 6px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50px;
+            cursor: pointer;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%; /* Diupdate lewat JS */
+            background: #fff;
+            border-radius: 50px;
+            position: relative;
+            transition: width 0.1s linear;
+        }
+
+        /* Titik bulat di ujung progress */
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            height: 12px;
+            width: 12px;
+            background: #fff;
+            border-radius: 50%;
+            right: -6px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0; /* Sembunyi */
+            transition: opacity 0.2s ease;
+            box-shadow: 0 0 5px rgba(0,0,0,0.2);
+        }
+
+        .progress-area:hover .progress-bar::before {
+            opacity: 1; /* Muncul saat dihover/sentuh */
+        }
+
+        /* --- Kontrol Tombol (Play, Next, Prev) --- */
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 20px;
+        }
+
+        .btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #fff;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn:active {
+            transform: scale(0.92); /* Efek tekan */
+        }
+
+        /* Ukuran Tombol Skip (Prev/Next) */
+        .prev-next {
+            font-size: 24px;
+            opacity: 0.8;
+        }
+
+        .prev-next:hover {
+            opacity: 1;
+        }
+
+        /* Ukuran Tombol Play/Pause */
+        .play-pause {
+            width: 65px;
+            height: 65px;
+            background: #fff;
+            color: #ff9a9e; /* Warna ikon sesuai gradient bg */
+            border-radius: 50%;
+            font-size: 26px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .play-pause:hover {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 480px) {
+            .play-pause {
+                width: 55px;
+                height: 55px;
+                font-size: 22px;
+            }
+            .controls { padding: 0 10px; }
+        }
+
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="player-container">
+    <div class="cover-wrapper">
+        <img id="cover-art" src="" alt="Our Memory">
+    </div>
+    
+    <div class="song-details">
+        <h2 id="song-title">Menghubungkan...</h2>
+        <p id="song-message">Special for you ❤️</p>
+    </div>
+
+    <div class="progress-area" id="progress-area">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <div class="controls">
+        <button class="btn prev-next" id="prev" onclick="prevTrack()">⏮</button>
+        <button class="btn play-pause" id="play-pause" onclick="togglePlay()">▶</button>
+        <button class="btn prev-next" id="next" onclick="nextTrack()">⏭</button>
+    </div>
+</div>
+
+<audio id="main-audio" src=""></audio>
+
+<script>
+    // --- DATA LAGU & FOTO KUSTOM ---
+    // Ubah Judul Lagu dan Pesan di bawah ini sesuai keinginan Anda.
+    const playlist = [
+        {
+            title: "Selalu ingin bersamamu", // Ubah Ini
+            message: "Mengingat setiap momen indah kita ❤️", // Ubah Ini
+            audioSrc: "1.mp3",
+            imgSrc: "1.jpg"
+        },
+        {
+            title: "Menggapai cita bersama", // Ubah Ini
+            message: "Selalu bahagia bersamamu, selamanya.", // Ubah Ini
+            audioSrc: "2.mp3",
+            imgSrc: "2.jpg"
+        }
+    ];
+
+    // --- State & DOM Elements ---
+    let trackIndex = 0; // Mulai dari lagu pertama
+    let isPlaying = false;
+
+    const container = document.querySelector(".player-container");
+    const audio = document.getElementById("main-audio");
+    const coverArt = document.getElementById("cover-art");
+    const title = document.getElementById("song-title");
+    const message = document.getElementById("song-message");
+    const playPauseBtn = document.getElementById("play-pause");
+    const progressBar = document.getElementById("progress-bar");
+    const progressArea = document.getElementById("progress-area");
+
+    // --- Functions ---
+
+    // 1. Memuat Data Lagu ke Interface
+    function loadTrack(index) {
+        title.innerText = playlist[index].title;
+        message.innerText = playlist[index].message;
+        audio.src = playlist[index].audioSrc;
+        
+        // Efek transisi foto (fade out -> ganti -> fade in)
+        coverArt.style.opacity = 0;
+        setTimeout(() => {
+            coverArt.src = playlist[index].imgSrc;
+            coverArt.style.opacity = 1;
+        }, 250);
+    }
+
+    // 2. Fungsi Play/Pause
+    function togglePlay() {
+        if (isPlaying) {
+            pauseTrack();
+        } else {
+            playTrack();
+        }
+    }
+
+    function playTrack() {
+        isPlaying = true;
+        audio.play().catch(() => {
+            // Menangani error jika browser memblokir autoplay saat ganti lagu
+            isPlaying = false;
+            playPauseBtn.innerText = "▶";
+        });
+        playPauseBtn.innerText = "⏸"; // Ganti ikon jadi Pause
+    }
+
+    function pauseTrack() {
+        isPlaying = false;
+        audio.pause();
+        playPauseBtn.innerText = "▶"; // Ganti ikon jadi Play
+    }
+
+    // 3. Fungsi Skip ke Lagu Selanjutnya
+    function nextTrack() {
+        // Karena cuma 2 lagu, kita gunakan logika toggle sederhana
+        trackIndex = (trackIndex === 0) ? 1 : 0;
+        loadTrack(trackIndex);
+        // Otomatis putar jika sebelumnya sedang play
+        if (isPlaying) playTrack();
+    }
+
+    // 4. Fungsi Skip ke Lagu Sebelumnya (Sama dengan Next karena cuma 2)
+    function prevTrack() {
+        trackIndex = (trackIndex === 0) ? 1 : 0;
+        loadTrack(trackIndex);
+        if (isPlaying) playTrack();
+    }
+
+    // --- Event Listeners ---
+
+    // A. Update Progress Bar saat musik berputar
+    audio.addEventListener("timeupdate", (e) => {
+        const currentTime = e.target.currentTime;
+        const duration = e.target.duration;
+        if (duration) {
+            let progressWidth = (currentTime / duration) * 100;
+            progressBar.style.width = `${progressWidth}%`;
+        }
+    });
+
+    // B. Klik pada Progress Area untuk Seek (Melompat ke detik tertentu)
+    progressArea.addEventListener("click", (e) => {
+        let progressWidth = progressArea.clientWidth; // Lebar total area
+        let clickedOffsetX = e.offsetX; // Posisi klik X
+        let songDuration = audio.duration; // Total durasi lagu
+
+        if (songDuration) {
+            audio.currentTime = (clickedOffsetX / progressWidth) * songDuration;
+            // Jika dipause, otomatis play setelah seek agar smooth
+            if (!isPlaying) playTrack();
+        }
+    });
+
+    // C. Otomatis Lanjut Lagu Saat Lagu Habis
+    audio.addEventListener("ended", () => {
+        nextTrack(); // Akan pindah ke lagu satunya dan otomatis play
+    });
+
+    // --- Inisialisasi Pertama Kali ---
+    // Jangan autoplay saat web dibuka, nunggu user klik Play.
+    loadTrack(trackIndex);
+
+</script>
+
+</body>
+</html>
